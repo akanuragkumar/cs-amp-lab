@@ -1,0 +1,54 @@
+Mac1.asm
+
+read macro
+mov ah,01h
+int 21h
+endm
+
+mac2.asm
+
+write macro
+mov ah,02h
+int 21h
+endm
+
+macro.asm
+
+data segment
+arr db 20 dup(?)
+msg1 db "enter the string:",10,13,"$" 
+msg2 db "the entered string:$",10,13,"$"
+data ends
+
+code segment
+assume ds:data,cs:code
+start: mov ax,data
+       mov ds,ax
+include c:\masm\mac1.asm
+include c:\masm\mac2.asm
+       mov cx,0000h
+       lea si,arr
+       lea dx,msg1
+       mov ah,09h
+       int 21h
+     r:read
+       mov [si],al
+       inc si
+       inc cx
+       cmp al,0dh
+       jne r
+       lea dx,msg2
+       mov ah,09h
+       int 21h
+       lea si,arr
+     w:mov dl,[si]
+       write
+       inc si
+       dec cx
+       cmp cx,0
+       jne w
+
+       mov ah,4ch
+       int 21h
+       code ends
+       end start
