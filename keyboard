@@ -1,0 +1,79 @@
+data segment
+pa equ 0DC00h
+pb equ 0DC01h
+pc equ 0DC02h
+cp equ 0DC03h
+msg1 db 'Row number: $'
+row db ?
+msg2 db 'Column number: $'
+col db ?
+tab db "0123456789.+-*/%pqr=stuv"
+msg3 db 'The key is : $'
+data ends
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+mov ds,ax
+mov es,ax
+mov al,90h
+mov dx,cp
+out dx,al
+call scan
+mov ah,4ch
+int 21h
+
+scan proc
+l:mov al,01h
+kl:mov dx,pc
+out dx,al
+mov dx,pa
+push ax
+in al,dx
+cmp al,0
+jne kl1
+pop ax
+rol al,1
+cmp al,08h
+je 1
+jmp kl
+kl1: pop bx
+mov di,0
+mov si,0
+kl2: shr al,1
+jc kl3
+inc di
+jmp kl2
+kl3: shr bx,1
+jc kl4
+inc si
+jmp kl3
+kl4: mov ah,09h
+lea dx,msg1
+int 21h
+mov dx,si
+add dl,30h
+mov ah,2
+int 21h
+
+mov ah,09
+lea dx,msg2
+int 21h
+mov dx,di
+add dl,30h
+mov ah,2
+int 21h
+
+mov cl,3
+shl si,cl
+add si,di
+mov ah,09h
+lea dx,msg3
+int 21h
+mov dl,tab[si]
+mov ah,02h
+int 21h
+ret
+scan endp
+
+code ends
+end start
