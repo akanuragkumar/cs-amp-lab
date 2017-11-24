@@ -1,0 +1,80 @@
+f1.asm
+
+eread macro
+mov ah,1
+int 21h
+endm
+
+str.asm
+
+include f1.asm
+data segment
+m1 db 'enter the string',10,13,'$'
+s1 db 10 dup(?)
+s2 db 10 dup(?)
+m2 db 10,13, 'string are equal $'
+m3 db 10,13, 'string are not equal $'
+m4 db 10,13, 'length of string 1 $'
+m5 db 10,13, 'length of string 2 $'
+len1 dw 0
+len2 dw 0
+data ends
+code segment
+assume cs:code,ds:data
+start:mov ax,data
+mov ds,ax
+mov es,ax
+mov ah,09h
+lea dx,m1
+int 21h
+lea si,s1
+read:eread
+cmp al,13
+je l
+mov [si],al
+inc si
+inc len1
+jmp read
+l:lea di,s2
+l1:eread
+cmp al,13
+je l2
+mov [di],al
+inc di
+inc len2
+jmp l1
+l2:mov cx,len1
+cmp cx,len2
+jne strn
+
+mov cx,len1
+lea si,s1
+lea di,s2
+cld
+repe cmpsb
+jne strn
+mov ah,09h
+lea dx,m2
+int 21h
+jmp exit
+strn:mov ah,09h
+lea dx,m3
+int 21h
+exit:mov ah,09h
+lea dx,m4
+int 21h
+mov dx,len1
+add dl,30h
+mov ah,2
+int 21h
+mov ah,09h
+lea dx,m5
+int 21h
+mov dx,len2
+add dl,30h
+mov ah,2
+int 21h
+mov ah,4ch
+int 21h
+code ends
+end start
