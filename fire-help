@@ -1,0 +1,83 @@
+data segment
+pa equ 0DC00h
+pb equ 0DC01h
+pc equ 0DC02h
+cp equ 0DC03h
+fire db 86h,88h,0f9h,8eh 
+help db 8ch,0c7h,86h,89h
+b db 0ffh
+data ends
+code segment
+assume cs:code,ds:data
+start:mov ax,data
+mov ds,ax
+mov dx,cp
+mov al,80h
+out dx,al
+mov bx,8
+rl:lea si,fire
+mov cx,4
+l1 : mov al,[si]
+call disp
+inc si
+loop l1
+call delay
+call delay
+mov cx,04
+bl1 : mov al,b 
+call disp
+loop bl1
+call delay
+call delay
+lea si,help
+mov cx,4
+l2:mov al,[si]
+call disp
+inc si
+loop l2
+call delay
+call delay
+mov cx,4
+bl2: mov al,b
+call disp
+loop bl2
+call delay
+call delay
+dec bx
+jnz rl
+mov ah,4ch
+int 21h
+
+delay proc
+push bx
+push cx
+mov cx,0ffffh
+dl1:mov bx,2fffh
+dl2:dec bx
+jnz dl2
+loop dl1
+pop cx
+pop bx 
+ret 
+delay endp
+
+disp proc
+push cx
+mov cx,8
+l:rol al,1
+mov dx,pb
+out dx,al
+push ax
+mov al,1
+mov dx,pc
+out dx,al
+mov al,0
+out dx,al
+pop ax
+loop l
+pop cx 
+ret
+disp endp
+code ends
+end start
+
