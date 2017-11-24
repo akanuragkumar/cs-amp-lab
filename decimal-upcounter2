@@ -1,0 +1,64 @@
+assume cs:code
+start:mov al,00
+mov bl,00
+mov dh,20
+mov dl,50
+mov ah,2
+mov bh,0
+int 10h
+mov dl,30h
+mov ah,02h
+int 21h
+mov dl,30h
+mov ah,02h
+int 21h
+call delay
+call delay
+mov al,00 
+mov bl,00 
+mov cx,99
+l:mov dh,20
+mov dl,50
+mov ah,2
+mov bh,0
+int 10h
+mov al,bl
+add al,1
+daa
+mov bl,al
+push ax
+push cx
+mov cl,4
+str al,cl  
+add al,30h
+mov dl,al
+mov ah,2
+int 21h
+pop cx
+pop ax
+and al,0fh
+add al,30h
+mov dl,al
+mov ah,2
+int 21h
+call delay
+call delay
+dec cx
+jnz l
+mov ah,4ch
+int 21h
+
+delay proc
+push cx
+push bx
+mov cx,0ffffh
+dl1: mov bx,0fffh
+dl2: dec bx
+jnz dl2
+loop dl1
+pop bx
+pop cx
+ret
+delay endp
+code ends 
+end start
