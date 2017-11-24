@@ -1,0 +1,38 @@
+data segment
+pa equ 0dc00h
+pb equ 0dc01h
+pc equ 0dc02h
+cp equ 0dc03h
+data ends
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+mov ds,ax
+mov dx,cp
+mov al,82h
+out dx,al
+mov cx,10
+mov al,00h
+l:mov dx,pa
+out dx,al
+call delay
+ror al,1
+xor al,80h
+loop l
+mov ah,4ch
+int 21h
+
+delay proc
+push cx
+push bx
+mov cx,0ffffh
+dl1:mov cx,4fffh
+dl2:dec bx
+jnz dl2
+loop dl1
+pop bx
+pop cx
+ret
+delay endp
+code ends
+end start
